@@ -1,5 +1,8 @@
 blank_issues_enabled: true
 contact_links:
+  - name: 🐞 Bug v6
+    url: https://github.community/c/software-development/47
+    about: Find/file tickets with the community
   - name: ⭐️ Feature Request
     url: https://github.com/npm/feedback
     about: Add your request or discuss the project w/ the community
@@ -10,8 +13,8 @@ contact_links:
     url: https://status.npmjs.org
     about: Check the current status of the website/registry
   - name: 🗂 Documentation
-    url: https://preview-docs.npmjs.com/cli-commands/npm
+    url: https://docs.npmjs.com
     about: Preview our new docs
   - name: 📫 Support
-    url: https://npm.community
-    about: Links to other support options &/or community references
+    url: https://www.npmjs.com/support
+    about: Contact npm support staff with problems requiring human intervention
