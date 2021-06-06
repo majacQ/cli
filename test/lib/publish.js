@@ -2,6 +2,7 @@ const t = require('tap')
 const mockNpm = require('../fixtures/mock-npm')
 const fs = require('fs')
 
+  <<<<<<< isaacs/set-node-env-production
 // The way we set loglevel is kind of convoluted, and there is no way to affect
 // it from these tests, which only interact with lib/publish.js, which assumes
 // that the code that is requiring and calling lib/publish.js has already
@@ -25,12 +26,21 @@ t.test('should publish with libnpmpublish, passing through flatOptions and respe
 
   const registry = 'https://some.registry'
   const publishConfig = { registry }
+  =======
+test('should publish with libnpmpublish', (t) => {
+  const publishConfig = { registry: 'https://some.registry' }
+  >>>>>>> nlf/pass-publishConfig
   const testDir = t.testdir({
     'package.json': JSON.stringify({
       name: 'my-cool-pkg',
       version: '1.0.0',
+  <<<<<<< isaacs/set-node-env-production
       publishConfig,
     }, null, 2),
+  =======
+      publishConfig
+    }, null, 2)
+  >>>>>>> nlf/pass-publishConfig
   })
 
   const Publish = t.mock('../../lib/publish.js', {
@@ -98,8 +108,14 @@ t.test('re-loads publishConfig.registry if added during script process', (t) => 
         t.match(manifest, { name: 'my-cool-pkg', version: '1.0.0' }, 'gets manifest')
         t.type(tarData, Buffer, 'tarData is a buffer')
         t.ok(opts, 'gets opts object')
+  <<<<<<< isaacs/set-node-env-production
         t.same(opts.registry, registry, 'publishConfig.registry is passed through')
       },
+  =======
+        t.same(opts.publishConfig, publishConfig, 'publishConfig is passed through')
+        t.ok(true, 'libnpmpublish is called')
+      }
+  >>>>>>> nlf/pass-publishConfig
     },
   })
   const npm = mockNpm({ config })
