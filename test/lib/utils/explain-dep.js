@@ -1,8 +1,7 @@
 const t = require('tap')
-const requireInject = require('require-inject')
 const npm = {}
-const { explainNode, printNode } = requireInject('../../../lib/utils/explain-dep.js', {
-  '../../../lib/npm.js': npm
+const { explainNode, printNode } = t.mock('../../../lib/utils/explain-dep.js', {
+  '../../../lib/npm.js': npm,
 })
 
 const cases = {
@@ -13,12 +12,13 @@ const cases = {
     dependents: [
       {
         type: 'prod',
+        name: 'prod-dep',
         spec: '1.x',
         from: {
-          location: '/path/to/project'
-        }
-      }
-    ]
+          location: '/path/to/project',
+        },
+      },
+    ],
   },
 
   deepDev: {
@@ -29,6 +29,7 @@ const cases = {
     dependents: [
       {
         type: 'prod',
+        name: 'deep-dev',
         spec: '2.x',
         from: {
           name: 'metadev',
@@ -37,6 +38,7 @@ const cases = {
           dependents: [
             {
               type: 'prod',
+              name: 'metadev',
               spec: '3.x',
               from: {
                 name: 'topdev',
@@ -45,18 +47,19 @@ const cases = {
                 dependents: [
                   {
                     type: 'dev',
+                    name: 'topdev',
                     spec: '4.x',
                     from: {
-                      location: '/path/to/project'
-                    }
-                  }
-                ]
-              }
-            }
-          ]
-        }
-      }
-    ]
+                      location: '/path/to/project',
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+    ],
   },
 
   optional: {
@@ -66,13 +69,14 @@ const cases = {
     optional: true,
     dependents: [
       {
-        type: 'optdep',
+        type: 'optional',
+        name: 'optdep',
         spec: '1.0.0',
         from: {
-          location: '/path/to/project'
-        }
-      }
-    ]
+          location: '/path/to/project',
+        },
+      },
+    ],
   },
 
   peer: {
@@ -83,12 +87,31 @@ const cases = {
     dependents: [
       {
         type: 'peer',
+        name: 'peer',
         spec: '1.0.0',
         from: {
-          location: '/path/to/project'
-        }
-      }
-    ]
+          location: '/path/to/project',
+        },
+      },
+    ],
+  },
+
+  bundled: {
+    name: 'bundle-of-joy',
+    version: '1.0.0',
+    location: 'node_modules/bundle-of-joy',
+    bundled: true,
+    dependents: [
+      {
+        type: 'prod',
+        name: 'prod-dep',
+        spec: '1.x',
+        bundled: true,
+        from: {
+          location: '/path/to/project',
+        },
+      },
+    ],
   },
 
   extraneous: {
@@ -96,8 +119,8 @@ const cases = {
     version: '1337.420.69-lol',
     location: 'node_modules/extra-neos',
     dependents: [],
-    extraneous: true
-  }
+    extraneous: true,
+  },
 }
 
 cases.manyDeps = {
@@ -106,65 +129,80 @@ cases.manyDeps = {
   dependents: [
     {
       type: 'prod',
+      name: 'manydep',
       spec: '1.0.0',
-      from: cases.prodDep
+      from: cases.prodDep,
     },
     {
       type: 'optional',
+      name: 'manydep',
       spec: '1.x',
-      from: cases.optional
+      from: cases.optional,
     },
     {
       type: 'prod',
+      name: 'manydep',
       spec: '1.0.x',
-      from: cases.extraneous
+      from: cases.extraneous,
     },
     {
       type: 'dev',
+      name: 'manydep',
       spec: '*',
-      from: cases.deepDev
+      from: cases.deepDev,
     },
     {
       type: 'peer',
+      name: 'manydep',
       spec: '>1.0.0-beta <1.0.1',
-      from: cases.peer
+      from: cases.peer,
     },
     {
       type: 'prod',
+      name: 'manydep',
+      spec: '>1.0.0-beta <1.0.1',
+      from: {
+        location: '/path/to/project',
+      },
+    },
+    {
+      type: 'prod',
+      name: 'manydep',
       spec: '1',
       from: {
         name: 'a package with a pretty long name',
         version: '1.2.3',
         dependents: {
-          location: '/path/to/project'
-        }
-      }
+          location: '/path/to/project',
+        },
+      },
     },
     {
       type: 'prod',
+      name: 'manydep',
       spec: '1',
       from: {
         name: 'another package with a pretty long name',
         version: '1.2.3',
         dependents: {
-          location: '/path/to/project'
-        }
-      }
+          location: '/path/to/project',
+        },
+      },
     },
     {
       type: 'prod',
+      name: 'manydep',
       spec: '1',
       from: {
         name: 'yet another a package with a pretty long name',
         version: '1.2.3',
         dependents: {
-          location: '/path/to/project'
-        }
-      }
+          location: '/path/to/project',
+        },
+      },
     },
-  ]
+  ],
 }
-
 
 for (const [name, expl] of Object.entries(cases)) {
   t.test(name, t => {

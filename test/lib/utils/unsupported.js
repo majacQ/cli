@@ -1,4 +1,4 @@
-const test = require('tap').test
+const t = require('tap')
 const unsupported = require('../../../lib/utils/unsupported.js')
 
 const versions = [
@@ -30,23 +30,23 @@ const versions = [
   ['v10.0.0-0', false, false],
   ['v11.0.0-0', false, false],
   ['v12.0.0-0', false, false],
-  ['v13.0.0-0', false, false]
+  ['v13.0.0-0', false, false],
 ]
 
-test('versions', function (t) {
+t.test('versions', function (t) {
   t.plan(versions.length * 2)
   versions.forEach(function (verinfo) {
     const version = verinfo[0]
     const broken = verinfo[1]
     const unsupp = verinfo[2]
     const nodejs = unsupported.checkVersion(version)
-    t.is(nodejs.broken, broken, version + ' ' + (broken ? '' : 'not ') + 'broken')
-    t.is(nodejs.unsupported, unsupp, version + ' ' + (unsupp ? 'unsupported' : 'supported'))
+    t.equal(nodejs.broken, broken, version + ' ' + (broken ? '' : 'not ') + 'broken')
+    t.equal(nodejs.unsupported, unsupp, version + ' ' + (unsupp ? 'unsupported' : 'supported'))
   })
-  t.done()
+  t.end()
 })
 
-test('checkForBrokenNode', t => {
+t.test('checkForBrokenNode', t => {
   // run it once to not fail
   unsupported.checkForBrokenNode()
 
@@ -71,13 +71,13 @@ test('checkForBrokenNode', t => {
   const expectLogs = [
     'ERROR: npm is known not to run on Node.js 1.2.3',
     "You'll need to upgrade to a newer Node.js version in order to use this",
-    'version of npm. You can find the latest version at https://nodejs.org/'
+    'version of npm. You can find the latest version at https://nodejs.org/',
   ]
   console.error = msg => logs.push(msg)
   unsupported.checkForBrokenNode()
 })
 
-test('checkForUnsupportedNode', t => {
+t.test('checkForUnsupportedNode', t => {
   const npmlog = require('npmlog')
   const { warn } = npmlog
   const versionPropDesc = Object.getOwnPropertyDescriptor(process, 'version')
@@ -92,7 +92,7 @@ test('checkForUnsupportedNode', t => {
     'npm does not support Node.js 8.0.0',
     'You should probably upgrade to a newer version of node as we',
     "can't make any promises that npm will work with this version.",
-    'You can find the latest version at https://nodejs.org/'
+    'You can find the latest version at https://nodejs.org/',
   ]
   npmlog.warn = (section, msg) => logs.push(msg)
 

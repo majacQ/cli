@@ -1,15 +1,16 @@
 const t = require('tap')
-const requireInject = require('require-inject')
 
-const settings = {}
-t.afterEach(cb => {
-  Object.keys(settings).forEach(k => { delete settings[k] })
-  cb()
+const settings = {
+  level: 'warn',
+}
+t.afterEach(() => {
+  Object.keys(settings).forEach(k => {
+    delete settings[k]
+  })
 })
 
 const WARN_CALLED = []
 const npmlog = {
-  level: 'warn',
   warn: (...args) => {
     WARN_CALLED.push(args)
   },
@@ -22,28 +23,50 @@ const npmlog = {
     notice: 3500,
     warn: 4000,
     error: 5000,
-    silent: Infinity
+    silent: Infinity,
   },
   settings,
-  enableColor: () => { settings.color = true },
-  disableColor: () => { settings.color = false },
-  enableUnicode: () => { settings.unicode = true },
-  disableUnicode: () => { settings.unicode = false },
-  enableProgress: () => { settings.progress = true },
-  disableProgress: () => { settings.progress = false },
-  set heading (h) { settings.heading = h },
-  set level (l) { settings.level = l }
+  enableColor: () => {
+    settings.color = true
+  },
+  disableColor: () => {
+    settings.color = false
+  },
+  enableUnicode: () => {
+    settings.unicode = true
+  },
+  disableUnicode: () => {
+    settings.unicode = false
+  },
+  enableProgress: () => {
+    settings.progress = true
+  },
+  disableProgress: () => {
+    settings.progress = false
+  },
+  get heading () {
+    return settings.heading
+  },
+  set heading (h) {
+    settings.heading = h
+  },
+  get level () {
+    return settings.level
+  },
+  set level (l) {
+    settings.level = l
+  },
 }
 
 const EXPLAIN_CALLED = []
-const setupLog = requireInject('../../../lib/utils/setup-log.js', {
+const setupLog = t.mock('../../../lib/utils/setup-log.js', {
   '../../../lib/utils/explain-eresolve.js': {
     explain: (...args) => {
       EXPLAIN_CALLED.push(args)
       return 'explanation'
-    }
+    },
   },
-  npmlog
+  npmlog,
 })
 
 const config = obj => ({
@@ -52,7 +75,7 @@ const config = obj => ({
   },
   set (k, v) {
     obj[k] = v
-  }
+  },
 })
 
 t.test('setup with color=always and unicode', t => {
@@ -65,7 +88,7 @@ t.test('setup with color=always and unicode', t => {
     loglevel: 'warn',
     color: 'always',
     unicode: true,
-    progress: false
+    progress: false,
   })), true)
 
   npmlog.warn('ERESOLVE', 'hello', { some: { other: 'object' } })
@@ -73,7 +96,7 @@ t.test('setup with color=always and unicode', t => {
     'log.warn(ERESOLVE) patched to call explainEresolve()')
   t.strictSame(WARN_CALLED, [
     ['ERESOLVE', 'hello'],
-    ['', 'explanation']
+    ['', 'explanation'],
   ], 'warn the explanation')
   EXPLAIN_CALLED.length = 0
   WARN_CALLED.length = 0
@@ -86,7 +109,7 @@ t.test('setup with color=always and unicode', t => {
     color: true,
     unicode: true,
     progress: false,
-    heading: 'npm'
+    heading: 'npm',
   })
 
   t.end()
@@ -106,7 +129,7 @@ t.test('setup with color=true, no unicode, and non-TTY terminal', t => {
     loglevel: 'warn',
     color: false,
     progress: false,
-    heading: 'asdf'
+    heading: 'asdf',
   })), false)
 
   t.strictSame(settings, {
@@ -114,7 +137,7 @@ t.test('setup with color=true, no unicode, and non-TTY terminal', t => {
     color: false,
     unicode: false,
     progress: false,
-    heading: 'asdf'
+    heading: 'asdf',
   })
 
   t.end()
@@ -137,7 +160,7 @@ t.test('setup with color=true, no unicode, and dumb TTY terminal', t => {
     loglevel: 'warn',
     color: true,
     progress: false,
-    heading: 'asdf'
+    heading: 'asdf',
   })), true)
 
   t.strictSame(settings, {
@@ -145,7 +168,7 @@ t.test('setup with color=true, no unicode, and dumb TTY terminal', t => {
     color: true,
     unicode: false,
     progress: false,
-    heading: 'asdf'
+    heading: 'asdf',
   })
 
   t.end()
@@ -168,7 +191,7 @@ t.test('setup with color=true, no unicode, and non-dumb TTY terminal', t => {
     loglevel: 'warn',
     color: true,
     progress: true,
-    heading: 'asdf'
+    heading: 'asdf',
   })), true)
 
   t.strictSame(settings, {
@@ -176,7 +199,7 @@ t.test('setup with color=true, no unicode, and non-dumb TTY terminal', t => {
     color: true,
     unicode: false,
     progress: true,
-    heading: 'asdf'
+    heading: 'asdf',
   })
 
   t.end()
@@ -199,7 +222,7 @@ t.test('setup with non-TTY stdout, TTY stderr', t => {
     loglevel: 'warn',
     color: true,
     progress: true,
-    heading: 'asdf'
+    heading: 'asdf',
   })), false)
 
   t.strictSame(settings, {
@@ -207,7 +230,7 @@ t.test('setup with non-TTY stdout, TTY stderr', t => {
     color: true,
     unicode: false,
     progress: true,
-    heading: 'asdf'
+    heading: 'asdf',
   })
 
   t.end()
@@ -229,7 +252,7 @@ t.test('setup with TTY stdout, non-TTY stderr', t => {
     loglevel: 'warn',
     color: true,
     progress: true,
-    heading: 'asdf'
+    heading: 'asdf',
   })), true)
 
   t.strictSame(settings, {
@@ -237,7 +260,7 @@ t.test('setup with TTY stdout, non-TTY stderr', t => {
     color: false,
     unicode: false,
     progress: false,
-    heading: 'asdf'
+    heading: 'asdf',
   })
 
   t.end()
@@ -246,7 +269,7 @@ t.test('setup with TTY stdout, non-TTY stderr', t => {
 t.test('set loglevel to timing', t => {
   setupLog(config({
     timing: true,
-    loglevel: 'notice'
+    loglevel: 'notice',
   }))
   t.equal(settings.level, 'timing')
   t.end()
@@ -266,7 +289,7 @@ t.test('silent has no logging', t => {
   process.env.TERM = 'totes not dum'
 
   setupLog(config({
-    loglevel: 'silent'
+    loglevel: 'silent',
   }))
   t.equal(settings.progress, false, 'progress disabled when silent')
   t.end()
