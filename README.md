@@ -24,6 +24,8 @@ You can configure npm to use any compatible registry you
 like, and even run your own registry. Check out the [doc on
 registries](https://docs.npmjs.com/misc/registry).
 
+
+[![Node CI](https://github.com/majacQ/cli/actions/workflows/ci.yml/badge.svg?branch=dependabot%2Fnpm_and_yarn%2Fhosted-git-info-2.8.9&event=registry_package)](https://github.com/majacQ/cli/actions/workflows/ci.yml)
 ## Super Easy Install
 
 npm is bundled with [node](https://nodejs.org/en/download/).
